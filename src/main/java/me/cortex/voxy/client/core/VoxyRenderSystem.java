@@ -2,6 +2,7 @@ package me.cortex.voxy.client.core;
 
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.cortex.voxy.client.TimingStatistics;
 import me.cortex.voxy.client.VoxyClient;
 import me.cortex.voxy.client.config.VoxyConfig;
@@ -15,6 +16,7 @@ import me.cortex.voxy.client.core.rendering.RenderDistanceTracker;
 import me.cortex.voxy.client.core.rendering.Viewport;
 import me.cortex.voxy.client.core.rendering.ViewportSelector;
 import me.cortex.voxy.client.core.rendering.building.RenderGenerationService;
+import me.cortex.voxy.client.core.rendering.util.FogParameters;
 import me.cortex.voxy.client.core.rendering.hierachical.AsyncNodeManager;
 import me.cortex.voxy.client.core.rendering.hierachical.HierarchicalOcclusionTraverser;
 import me.cortex.voxy.client.core.rendering.hierachical.NodeCleaner;
@@ -163,6 +165,9 @@ public class VoxyRenderSystem {
 
 
     public Viewport<?> setupViewport(ChunkRenderMatrices matrices, double cameraX, double cameraY, double cameraZ) {
+        float[] color = RenderSystem.getShaderFogColor();
+        var fogParameters = new FogParameters(color[0], color[1], color[2], color[3], RenderSystem.getShaderFogStart(), RenderSystem.getShaderFogEnd());
+
         var viewport = this.getViewport();
         if (viewport == null) {
             return null;
