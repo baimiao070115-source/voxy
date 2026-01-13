@@ -9,6 +9,7 @@ import me.cortex.voxy.client.config.VoxyConfig;
 import me.cortex.voxy.client.core.gl.Capabilities;
 import me.cortex.voxy.client.core.gl.GlBuffer;
 import me.cortex.voxy.client.core.gl.GlTexture;
+import me.cortex.voxy.client.core.util.GPUTiming;
 import me.cortex.voxy.client.core.model.ModelBakerySubsystem;
 import me.cortex.voxy.client.core.model.ModelStore;
 import me.cortex.voxy.client.core.rendering.ChunkBoundRenderer;
@@ -260,8 +261,10 @@ public class VoxyRenderSystem {
         TimingStatistics.E.stop();
 
 
+        GPUTiming.INSTANCE.marker();
         //The entire rendering pipeline (excluding the chunkbound thing)
         this.pipeline.runPipeline(viewport, boundFB, dims[2], dims[3]);
+        GPUTiming.INSTANCE.marker();
 
 
         TimingStatistics.main.stop();
@@ -417,12 +420,7 @@ public class VoxyRenderSystem {
             this.nodeManager.addDebug(debug);
             this.pipeline.addDebug(debug);
         }
-        {
-            TimingStatistics.update();
-            debug.add("Voxy frame runtime (millis): " + TimingStatistics.dynamic.pVal() + ", " + TimingStatistics.main.pVal()+ ", " + TimingStatistics.postDynamic.pVal()+ ", " + TimingStatistics.all.pVal());
-            debug.add("Extra time: " + TimingStatistics.A.pVal() + ", " + TimingStatistics.B.pVal() + ", " + TimingStatistics.C.pVal() + ", " + TimingStatistics.D.pVal());
-            debug.add("Extra 2 time: " + TimingStatistics.E.pVal() + ", " + TimingStatistics.F.pVal() + ", " + TimingStatistics.G.pVal() + ", " + TimingStatistics.H.pVal() + ", " + TimingStatistics.I.pVal());
-        }
+        debug.add(GPUTiming.INSTANCE.getDebug());
         PrintfDebugUtil.addToOut(debug);
     }
 

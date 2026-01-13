@@ -1484,9 +1484,10 @@ public class RenderDataFactory {
             int skipB = 0;
             for (int z = 0; z < 32; z++) {
                 int i = y*32+z;
-                int msk = this.nonOpaqueMasks[i];
-                if ((msk & 1) != 0) {//-x
+                int msk = this.opaqueMasks[i];
+                if ((msk & 1) == 0) {//-x
                     long neighborId = this.neighboringFaces[i];
+                    //TODO also check self occlusion
 
                     int sidx = (i<<5) * 2;
                     long A = this.sectionData[sidx];
@@ -1505,8 +1506,9 @@ public class RenderDataFactory {
                     dualMeshNonOpaqueOuterX(0, A, Am, modelId, Mapper.getLightId(neighborId), nM, this.sectionData[sidx+2], this.sectionData[sidx+3], nnx, npx);
                 } else {skipA++;}
 
-                if ((msk & (1<<31)) != 0) {//+x
+                if ((msk & (1<<31)) == 0) {//+x
                     long neighborId = this.neighboringFaces[i+32*32];
+                    //TODO also check self occlusion
 
                     int sidx = (i*32+31) * 2;
                     long A = this.sectionData[sidx];
