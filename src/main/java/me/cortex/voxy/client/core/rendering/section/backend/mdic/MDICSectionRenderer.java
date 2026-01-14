@@ -108,9 +108,10 @@ public class MDICSectionRenderer extends AbstractSectionRenderer<MDICViewport, B
                 .defineIf("TAA_PATCH", taa != null)
                 .defineIf("DEBUG_RENDER", false)
 
-                .defineIf("DARKENED_TINTING", Minecraft.getInstance().level.effects().constantAmbientLight())//TODO: FIXME: this is really jank atm
-
                 .addSource(ShaderType.VERTEX, vertex);
+
+        //Apply per face tinting
+        addDirectionalFaceTint(builder, Minecraft.getInstance().level);
 
         String frag = ShaderLoader.parse("voxy:lod/gl46/quads.frag");
 
@@ -121,28 +122,9 @@ public class MDICSectionRenderer extends AbstractSectionRenderer<MDICViewport, B
         this.terrainShader = tryCompilePatchedOrNormal(builder, opaqueFrag, frag);
 
         String translucentFrag = pipeline.patchTranslucentShader(this, frag);
-        if (translucentFrag != null) {
-            this.translucentTerrainShader = tryCompilePatchedOrNormal(builder, translucentFrag, frag);
-        } else {
-            this.translucentTerrainShader = this.terrainShader;
-        }
-    }
+        translucentFrag = translucentFrag==null?frag:translucentFrag;
 
-    private static Shader tryCompilePatchedOrNormal(Shader.Builder<?> builder, String shader, String original) {
-        boolean patched = shader != original;//This is the correct comparison type (reference)
-        try {
-            return builder.clone()
-                    .defineIf("PATCHED_SHADER", patched)
-                    .addSource(ShaderType.FRAGMENT, shader)
-                    .compile();
-        } catch (RuntimeException e) {
-            if (patched) {
-                Logger.error("Failed to compile shader patch, using normal pipeline to prevent errors", e);
-                return tryCompilePatchedOrNormal(builder, original, original);
-            } else {
-                throw e;
-            }
-        }
+        this.translucentTerrainShader = tryCompilePatchedOrNormal(builder.clone().define("TRANSLUCENT"), translucentFrag, frag);
     }
 
     private void uploadUniformBuffer(MDICViewport viewport) {
