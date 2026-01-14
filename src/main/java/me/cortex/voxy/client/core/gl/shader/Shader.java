@@ -109,6 +109,11 @@ public class Shader extends TrackedObject {
             return this;
         }
 
+        public Builder<T> define(String name, float value) {
+            this.defines.put(name, Float.toString(value));
+            return this;
+        }
+
         public Builder<T> define(String name, String value) {
             this.defines.put(name, value);
             return this;
