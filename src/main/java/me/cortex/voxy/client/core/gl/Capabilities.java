@@ -7,6 +7,8 @@ import org.lwjgl.opengl.GL20C;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
+import java.util.Locale;
+
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
@@ -86,8 +88,8 @@ public class Capabilities {
 
         this.ssboMaxSize = glGetInteger64(GL_MAX_SHADER_STORAGE_BLOCK_SIZE);
 
-        this.isMesa = glGetString(GL_VERSION).toLowerCase().contains("mesa");
-        var vendor = glGetString(GL_VENDOR).toLowerCase();
+        this.isMesa = glGetString(GL_VERSION).toLowerCase(Locale.ROOT).contains("mesa");
+        var vendor = glGetString(GL_VENDOR).toLowerCase(Locale.ROOT);
         this.isIntel = vendor.contains("intel");
         this.isNvidia = vendor.contains("nvidia");
         this.isAmd = vendor.contains("amd")||vendor.contains("radeon");
