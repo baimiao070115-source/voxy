@@ -762,7 +762,7 @@ public class RenderDataFactory {
                         //Check and test if can cull W.R.T neighbor
                         if (Mapper.getBlockId(neighborId) != 0) {//Not air
                             int modelId = this.modelMan.getModelId(Mapper.getBlockId(neighborId));
-                            if (modelId == ((A>>26)&0xFFFF)) {//TODO: FIXME, this technically isnt correct as need to check self occulsion, thinks?
+                            if (ModelQueries.cullsSame(B) && modelId == ((A>>26)&0xFFFF)) {//TODO: FIXME, this technically isnt correct as need to check self occulsion, thinks?
                                 //TODO: check self occlsuion in the if statment
                                 fail = true;
                             } else {
@@ -777,7 +777,7 @@ public class RenderDataFactory {
                         long nA = this.sectionData[(idx+skipAmount) * 2];
                         long nB = this.sectionData[(idx+skipAmount) * 2 + 1];
                         boolean failB = false;
-                        if ((nA&(0xFFFFL<<26)) == (A&(0xFFFFL<<26))) {//TODO: FIXME, this technically isnt correct as need to check self occulsion, thinks?
+                        if (ModelQueries.cullsSame(nB) && (nA&(0xFFFFL<<26)) == (A&(0xFFFFL<<26))) {//TODO: FIXME, this technically isnt correct as need to check self occulsion, thinks?
                             //TODO: check self occlsuion in the if statment
                             failB = true;
                         } else {

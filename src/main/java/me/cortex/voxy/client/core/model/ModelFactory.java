@@ -154,7 +154,19 @@ public class ModelFactory {
         this.customBlockStateIdMapping = mapping;
     }
 
-    private record RawBakeResult(int blockId, BlockState blockState, MemoryBuffer rawData) {
+    private static final class RawBakeResult {
+        private final int blockId;
+        private final BlockState blockState;
+        private final MemoryBuffer rawData;
+
+        public boolean isShaded;
+
+        public RawBakeResult(int blockId, BlockState blockState, MemoryBuffer rawData) {
+            this.blockId = blockId;
+            this.blockState = blockState;
+            this.rawData = rawData;
+        }
+
         public RawBakeResult(int blockId, BlockState blockState) {
             this(blockId, blockState, new MemoryBuffer(MODEL_TEXTURE_SIZE*MODEL_TEXTURE_SIZE*2*4*6));
         }
@@ -209,7 +221,7 @@ public class ModelFactory {
 
         RawBakeResult result = new RawBakeResult(blockId, blockState);
         int allocation = this.downstream.download(MODEL_TEXTURE_SIZE*MODEL_TEXTURE_SIZE*2*4*6, ptr -> this.rawBakeResults.add(result.cpyBuf(ptr)));
-        this.bakery.renderToStream(blockState, this.downstream.getBufferId(), allocation);
+        result.isShaded = this.bakery.renderToStream(blockState, this.downstream.getBufferId(), allocation);
         return true;
     }
 
@@ -235,7 +247,7 @@ public class ModelFactory {
             }
         }
         result.rawData.free();
-        var bakeResult = this.processTextureBakeResult(result.blockId, result.blockState, textureData);
+        var bakeResult = this.processTextureBakeResult(result.blockId, result.blockState, textureData, result.isShaded);
         if (bakeResult!=null) {
             this.uploadResults.add(bakeResult);
         }
@@ -327,7 +339,7 @@ public class ModelFactory {
         }
     }
 
-    private ModelBakeResultUpload processTextureBakeResult(int blockId, BlockState blockState, ColourDepthTextureData[] textureData) {
+    private ModelBakeResultUpload processTextureBakeResult(int blockId, BlockState blockState, ColourDepthTextureData[] textureData, boolean isShaded) {
         if (this.idMappings[blockId] != -1) {
             //This should be impossible to reach as it means that multiple bakes for the same blockId happened and where inflight at the same time!
             throw new IllegalStateException("Block id already added: " + blockId + " for state: " + blockState);

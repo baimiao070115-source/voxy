@@ -169,7 +169,7 @@ public class ModelTextureBakery {
     }
 
 
-    public void renderToStream(BlockState state, int streamBuffer, int streamOffset) {
+    public boolean renderToStream(BlockState state, int streamBuffer, int streamOffset) {
         this.capture.clear();
         boolean isBlock = true;
         RenderType layer;
@@ -218,10 +218,13 @@ public class ModelTextureBakery {
             blockTextureId = Minecraft.getInstance().getTextureManager().getTexture(new ResourceLocation("minecraft", "textures/atlas/blocks.png")).getId();
         }
 
+        boolean anyShaded = false;
+
         //TODO: fastpath for blocks
         if (isBlock) {
             this.vc.reset();
             this.bakeBlockModel(state, layer);
+            anyShaded = this.vc.anyShaded;
             if (!this.vc.isEmpty()) {//only render if there... is shit to render
 
                 //Setup for continual emission
@@ -262,6 +265,7 @@ public class ModelTextureBakery {
 
                 this.vc.reset();
                 this.bakeFluidState(state, layer, i);
+                anyShaded |= this.vc.anyShaded;
                 if (this.vc.isEmpty()) continue;
                 BudgetBufferRenderer.setup(this.vc.getAddress(), this.vc.quadCount(), blockTextureId);
 
@@ -325,6 +329,7 @@ public class ModelTextureBakery {
             //reset the blend func
             GL14.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         }
+        return anyShaded;
     }
 
 
