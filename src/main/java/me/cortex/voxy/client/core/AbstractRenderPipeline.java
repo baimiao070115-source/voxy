@@ -41,6 +41,8 @@ import static org.lwjgl.opengl.GL42.*;
 import static org.lwjgl.opengl.GL45.glClearNamedFramebufferfi;
 import static org.lwjgl.opengl.GL45.glGetNamedFramebufferAttachmentParameteri;
 import static org.lwjgl.opengl.GL45C.glBindTextureUnit;
+import static org.lwjgl.opengl.GL45.glUniform2f;
+import static org.lwjgl.opengl.GL33.glBindSampler;
 
 public abstract class AbstractRenderPipeline extends TrackedObject {
     private final BooleanSupplier frexStillHasWork;
@@ -123,9 +125,11 @@ public abstract class AbstractRenderPipeline extends TrackedObject {
         // the mismatched formats in this case is the d32 to d24s8
         glBindFramebuffer(GL30.GL_FRAMEBUFFER, targetFb);
 
+        this.depthCopy.bind();
         int depthTexture = glGetNamedFramebufferAttachmentParameteri(sourceFrameBuffer, GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME);
         glBindTextureUnit(0, depthTexture);
-
+        glBindSampler(0, DEPTH_SAMPLER);
+        glUniform2f(1,((float)width)/srcWidth, ((float)height)/srcHeight);
         glColorMask(false,false,false,false);
         this.depthCopy.blit();
 
