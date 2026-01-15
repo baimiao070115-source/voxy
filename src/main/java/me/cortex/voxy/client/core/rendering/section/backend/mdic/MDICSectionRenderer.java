@@ -99,7 +99,7 @@ public class MDICSectionRenderer extends AbstractSectionRenderer<MDICViewport, B
         this.pipeline = pipeline;
         //The pipeline can be used to transform the renderer in abstract ways
 
-        String vertex = ShaderLoader.parse("voxy:lod/gl46/quads2.vert");
+        String vertex = ShaderLoader.parse("voxy:lod/gl46/quads3.vert");
         String taa = pipeline.taaFunction("taaShift");
         if (taa != null) {
             vertex += "\n"+taa;//inject it at the end
@@ -107,6 +107,8 @@ public class MDICSectionRenderer extends AbstractSectionRenderer<MDICViewport, B
         var builder = Shader.make()
                 .defineIf("TAA_PATCH", taa != null)
                 .defineIf("DEBUG_RENDER", false)
+
+                .defineIf("USE_NV_BARRY", Capabilities.INSTANCE.nvBarryCoords)
 
                 .addSource(ShaderType.VERTEX, vertex);
 

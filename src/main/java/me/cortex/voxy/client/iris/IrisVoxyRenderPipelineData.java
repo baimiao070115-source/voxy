@@ -51,6 +51,7 @@ public class IrisVoxyRenderPipelineData {
     public final float[] resolutionScale;
     public final String TAA;
     public final boolean useViewportDims;
+    public final boolean deferTranslucency;
 
     private IrisVoxyRenderPipelineData(IrisShaderPatch patch, int[] opaqueDrawTargets, int[] translucentDrawTargets, StructLayout uniformSet, Runnable blendingSetup, ImageSet imageSet, SSBOSet ssboSet) {
         this.opaqueDrawTargets = opaqueDrawTargets;
@@ -65,6 +66,7 @@ public class IrisVoxyRenderPipelineData {
         this.TAA = patch.getTAAShift();
         this.resolutionScale = patch.getRenderScale();
         this.useViewportDims = patch.useViewportDims();
+        this.deferTranslucency = patch.deferedTranslucentRendering();
     }
 
     public SSBOSet getSsboSet() {
@@ -130,6 +132,10 @@ public class IrisVoxyRenderPipelineData {
             case VEC4I -> "ivec4";
         };
     }
+    public boolean shouldDeferTranslucency() {
+        return this.deferTranslucency;
+    }
+
     public record StructLayout(int size, String layout, LongConsumer updater) {}
     private static StructLayout createUniformLayoutStructAndUpdater(List<UniformWritingHolder> uniforms) {
         if (uniforms.size() == 0) {

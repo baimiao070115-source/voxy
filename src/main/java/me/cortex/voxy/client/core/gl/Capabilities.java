@@ -52,6 +52,7 @@ public class Capabilities {
     public final boolean sparseBuffer;
     public final boolean isNvidia;
     public final boolean isAmd;
+    public final boolean nvBarryCoords;
     public final boolean hasBrokenDepthSampler;
 
     public Capabilities() {
@@ -62,6 +63,7 @@ public class Capabilities {
         this.repFragTest = cap.GL_NV_representative_fragment_test;
         this.meshShaders = cap.GL_NV_mesh_shader;
         this.canQueryGpuMemory = cap.GL_NVX_gpu_memory_info;
+        this.nvBarryCoords = cap.GL_NV_fragment_shader_barycentric;
         //this.INT64_t = cap.GL_ARB_gpu_shader_int64 || cap.GL_AMD_gpu_shader_int64;
         //The only reliable way to test for int64 support is to try compile a shader
         this.INT64_t = testShaderCompilesOk(ShaderType.COMPUTE, """

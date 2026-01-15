@@ -177,6 +177,7 @@ public class IrisShaderPatch {
         public boolean excludeLodsFromVanillaDepth;
         public float[] renderScale;
         public boolean useViewportDims;
+        public boolean deferTranslucentRendering;
         public String checkValid() {
             if (this.blending != null) {
                 int i = 0;
@@ -267,6 +268,10 @@ public class IrisShaderPatch {
             return new float[]{this.patchData.renderScale[0],this.patchData.renderScale[0]};
         }
         return new float[]{Math.max(0.01f,this.patchData.renderScale[0]),Math.max(0.01f,this.patchData.renderScale[1])};
+    }
+
+    public boolean deferedTranslucentRendering() {
+        return this.patchData.deferTranslucentRendering;
     }
 
     public Runnable createBlendSetup() {
